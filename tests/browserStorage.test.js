@@ -1,8 +1,5 @@
 const assert = require('assert');
-const { FileStorage } = require('../');
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
+const { BrowserLocalStorage, BrowserSessionStorage } = require('../');
 
 
 function testStorage(storage) {
@@ -127,32 +124,12 @@ function testStorage(storage) {
 
 }
 
-function deleteFolder(folder, justContents) {
-    if(fs.existsSync(folder)) {
-        fs.readdirSync(folder).forEach(function(file,index){
-            var curPath = folder + "/" + file;
-            if(fs.lstatSync(curPath).isDirectory()) {
-                deleteFolder(curPath);
-            } else {
-                fs.unlinkSync(curPath);
-            }
-        });
-        if (!justContents) { fs.rmdirSync(folder) };
-    }
-};
-
-const folder = path.join(os.tmpdir(), 'filestoragetest');
-
-describe('FileStorage (new folder)', function () {
-    before(() => {
-        deleteFolder(folder);
-    });
-    testStorage(new FileStorage(folder));
+global.localStorage = {};
+describe('BrowserLocalStorage', function () {
+    testStorage(new BrowserLocalStorage());
 });
 
-describe('FileStorage (existing folder)', function () {
-    before(() => {
-        deleteFolder(folder, true);
-    });
-    testStorage(new FileStorage(folder));
+global.sessionStorage = {};
+describe('BrowserSessionStorage', function () {
+    testStorage(new BrowserSessionStorage());
 });
